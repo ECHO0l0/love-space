@@ -790,15 +790,17 @@ function loadScript(src) {
 
 // ==================== 初始化 ====================
 async function init() {
+  // 1. 始终先加载本地数据（安全底裤）
+  loadLocal();
+
+  // 2. 尝试同步云端
   try {
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js');
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     const { data } = await supabase.from('pet').select('*').single();
-    if (data) { isOnline = true; console.log('✅ 云端同步'); }
-  } catch(e) { console.log('📦 本地模式'); }
-
-  if (isOnline) { await loadCloud(); setupRealtime(); }
-  else { loadLocal(); }
+    if (data) { isOnline = true; console.log('✅ 云端同步'); await loadCloud(); setupRealtime(); }
+    else { console.log('📦 云端无数据，使用本地'); }
+  } catch(e) { console.log('📦 离线，使用本地模式'); }
 
   applyDecay();
   renderAll();
@@ -854,7 +856,8 @@ async function loadCloud() {
 }
 
 async function savePet() {
-  if (!isOnline) { saveLocal(); return; }
+  saveLocal(); // 始终存本地
+  if (!isOnline) return;
   await supabase.from('pet').upsert({
     id:1, hunger:pet.hunger, happiness:pet.happy, energy:pet.energy, cleanliness:pet.clean,
     last_fed:iso(pet.lastFed), last_played:iso(pet.lastPlayed), last_rested:iso(pet.lastRested), last_washed:iso(pet.lastWashed),
@@ -862,7 +865,8 @@ async function savePet() {
   });
 }
 async function saveGarden() {
-  if (!isOnline) { saveLocal(); return; }
+  saveLocal();
+  if (!isOnline) return;
   await supabase.from('garden').upsert(garden.map(p=>({
     plot_index:p.idx, plant_type:p.seed, planted_at:iso(p.plantedAt), watered_at:iso(p.wateredAt),
     stage:p.stage, water_count:p.waterCount
@@ -905,10 +909,12 @@ function saveLocal() { localStorage.setItem('gardenApp', JSON.stringify({ pet, g
 // ==================== 衰减 ====================
 function applyDecay() {
   const now = Date.now();
-  pet.hunger = Math.max(0, Math.min(100, pet.hunger - Math.floor((now - pet.lastFed)/(8*60*1000))));
-  pet.happy  = Math.max(0, Math.min(100, pet.happy  - Math.floor((now - pet.lastPlayed)/(12*60*1000))));
-  pet.energy = Math.max(0, Math.min(100, pet.energy - Math.floor((now - pet.lastRested)/(6*60*1000))));
-  pet.clean  = Math.max(0, Math.min(100, pet.clean  - Math.floor((now - pet.lastWashed)/(16*60*1000))));
+  // 如果时间戳为 0（从未操作过），视为刚刚，不衰减
+  const safe = (ts) => ts > 1000000000000 ? ts : now; // 早于2001年视为无效
+  pet.hunger = Math.max(0, Math.min(100, pet.hunger - Math.floor((now - safe(pet.lastFed))    / (8*60*1000))));
+  pet.happy  = Math.max(0, Math.min(100, pet.happy  - Math.floor((now - safe(pet.lastPlayed)) / (12*60*1000))));
+  pet.energy = Math.max(0, Math.min(100, pet.energy - Math.floor((now - safe(pet.lastRested)) / (6*60*1000))));
+  pet.clean  = Math.max(0, Math.min(100, pet.clean  - Math.floor((now - safe(pet.lastWashed)) / (16*60*1000))));
 }
 
 // ==================== 宠物操作 ====================
