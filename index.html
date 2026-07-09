@@ -3,326 +3,305 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💕 我们的秘密花园</title>
+<title>我们的秘密花园</title>
 <style>
-/* ====== 基础变量 & 样式 ====== */
+/* ====== 基础 ====== */
 :root {
-  --pink: #FF8BA7;
-  --pink-light: #FFC6D0;
-  --bg: #FFF5F5;
-  --card: #FFFFFF;
-  --text: #594A4E;
-  --text-light: #999;
-  --green: #7BC8A4;
-  --green-light: #C3F0CA;
-  --yellow: #FFD166;
-  --shadow: 0 4px 20px rgba(255, 139, 167, 0.15);
-  --radius: 20px;
+  --green: #6B9B77;
+  --green-light: #B7D7C5;
+  --soil: #C4A882;
+  --soil-light: #F5EDE3;
+  --white: #FFFFFF;
+  --bg: #FAF8F5;
+  --text: #3D322C;
+  --text-light: #8B8078;
+  --red: #E07B6C;
+  --yellow: #E8B85A;
+  --blue: #7BAAC4;
+  --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  --radius: 16px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: "PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
-  background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F3 30%, #FCE4EC 60%, #FFF5F5 100%);
-  background-attachment: fixed;
+  background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  overflow-x: hidden;
-}
-body::before {
-  content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none; z-index: 0;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(255,139,167,.08) 0%, transparent 50%),
-    radial-gradient(circle at 85% 60%, rgba(255,198,199,.08) 0%, transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(195,240,202,.06) 0%, transparent 40%);
 }
 
-/* ====== 浮动爱心 ====== */
-.hearts-container { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
-.heart { position:absolute; animation:floatUp 8s ease-in infinite; opacity:0; font-size:24px; }
-@keyframes floatUp {
-  0% { transform:translateY(100vh) scale(0) rotate(0deg); opacity:0; }
-  10% { opacity:0.6; }
-  50% { opacity:0.3; }
-  90% { opacity:0; }
-  100% { transform:translateY(-10vh) scale(1) rotate(360deg); opacity:0; }
-}
-
-/* ====== PIN 锁屏 ====== */
+/* ====== PIN ====== */
 .pin-overlay {
   position:fixed; top:0; left:0; width:100%; height:100%;
-  background: linear-gradient(135deg, #FF8BA7, #FFC6C7);
+  background: #5C7C64;
   display:flex; align-items:center; justify-content:center;
-  z-index:1000; transition: opacity .5s, visibility .5s;
+  z-index:1000; transition: opacity .4s, visibility .4s;
 }
 .pin-overlay.hidden { opacity:0; visibility:hidden; }
 .pin-box {
-  background: white; border-radius: 28px; padding: 40px 32px;
-  text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.1);
-  max-width: 360px; width: 90%;
+  background: white; border-radius: 20px; padding: 36px 28px;
+  text-align: center; box-shadow: 0 16px 48px rgba(0,0,0,.12);
+  max-width: 340px; width: 90%;
 }
-.pin-box h1 { font-size: 48px; margin-bottom: 8px; }
-.pin-box h2 { font-size: 18px; color: var(--text); margin-bottom: 24px; font-weight:500; }
-.pin-box p.hint { font-size:13px; color: var(--text-light); margin-bottom: 16px; }
+.pin-box .icon { font-size: 52px; margin-bottom: 8px; }
+.pin-box h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.pin-box .hint { font-size: 13px; color: var(--text-light); margin-bottom: 18px; }
 .pin-input {
-  width: 100%; padding: 14px 20px; border: 2px solid #F0E0E5;
-  border-radius: 16px; font-size: 20px; text-align: center;
-  letter-spacing: 8px; outline: none; transition: border-color .3s;
-  font-family: monospace;
+  width: 100%; padding: 12px 16px; border: 2px solid #E8E3DC;
+  border-radius: 12px; font-size: 18px; text-align: center;
+  letter-spacing: 6px; outline: none; transition: border .3s;
 }
-.pin-input:focus { border-color: var(--pink); }
+.pin-input:focus { border-color: var(--green); }
 .pin-btn {
-  margin-top: 16px; width: 100%; padding: 14px; border: none;
-  border-radius: 16px; font-size: 16px; font-weight: 600;
-  background: var(--pink); color: white; cursor: pointer;
-  transition: transform .2s, box-shadow .2s;
+  margin-top: 14px; width: 100%; padding: 12px; border: none;
+  border-radius: 12px; font-size: 15px; font-weight: 600;
+  background: var(--green); color: white; cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
 }
-.pin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,139,167,.3); }
-.pin-error { color: #E8505B; font-size: 13px; margin-top: 8px; min-height: 20px; }
+.pin-btn:active { transform: scale(0.97); }
+.pin-error { color: var(--red); font-size: 13px; margin-top: 8px; min-height: 20px; }
 
-/* ====== 主容器 ====== */
-.app-container {
-  max-width: 480px; margin: 0 auto; padding: 20px 16px 100px;
-  position: relative; z-index: 1;
-}
+/* ====== 布局 ====== */
+.app-container { max-width: 500px; margin: 0 auto; padding: 16px 14px 96px; }
 
-/* ====== 顶部 ====== */
-.header {
-  text-align: center; padding: 30px 20px 20px;
-}
-.header .avatar-row { font-size: 48px; margin-bottom: 8px; }
-.header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
+/* ====== 头部 ====== */
+.header { text-align: center; padding: 24px 16px 12px; }
+.header .title { font-size: 20px; font-weight: 700; }
 .header .subtitle { font-size: 13px; color: var(--text-light); margin-top: 4px; }
 
-/* ====== 倒计时卡片 ====== */
-.countdown-card {
-  background: var(--card); border-radius: var(--radius); padding: 20px 24px;
-  margin-bottom: 16px; box-shadow: var(--shadow); text-align: center;
-}
-.countdown-card .label { font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
-.countdown-card .days { font-size: 42px; font-weight: 800; color: var(--pink); }
-.countdown-card .days-sub { font-size: 14px; color: var(--text); }
-
-/* ====== 标签切换 ====== */
-.tabs {
-  display: flex; gap: 8px; margin-bottom: 16px;
-  background: var(--card); border-radius: var(--radius); padding: 6px;
-  box-shadow: var(--shadow);
-}
+/* ====== 标签 ====== */
+.tabs { display:flex; gap:6px; margin-bottom:14px; background: var(--white); border-radius: var(--radius); padding: 5px; box-shadow: var(--shadow); }
 .tab-btn {
-  flex: 1; padding: 12px 8px; border: none; border-radius: 16px;
+  flex:1; padding: 10px 6px; border: none; border-radius: 13px;
   background: transparent; font-size: 14px; cursor: pointer;
-  transition: all .3s; color: var(--text-light);
+  transition: all .25s; color: var(--text-light);
 }
-.tab-btn.active { background: var(--pink); color: white; font-weight: 600; }
+.tab-btn.active { background: var(--green); color: white; font-weight: 600; }
 
 /* ====== 面板 ====== */
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* ====== 宠物卡片 ====== */
-.pet-card {
-  background: var(--card); border-radius: var(--radius); padding: 30px 24px;
-  box-shadow: var(--shadow); text-align: center;
-}
+/* ====== 卡片 ====== */
+.card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 14px; }
+
+/* ====== 宠物 ====== */
+.pet-display { text-align: center; padding: 20px 0 10px; }
 .pet-emoji {
-  font-size: 100px; transition: transform .3s; cursor: pointer;
-  user-select: none; line-height: 1.2;
+  font-size: 110px; cursor: pointer; user-select: none;
+  transition: transform .2s; display: inline-block;
+  line-height: 1.2;
 }
-.pet-emoji:active { transform: scale(1.15); }
-.pet-name {
-  font-size: 20px; font-weight: 700; margin: 8px 0 4px;
+.pet-emoji:active { transform: scale(1.12); }
+.pet-name { font-size: 22px; font-weight: 700; margin: 4px 0; }
+.pet-name input {
+  border: none; border-bottom: 2px dashed #DDD; font-size: 22px;
+  font-weight: 700; text-align: center; width: 140px; outline: none;
+  background: transparent; color: var(--text); font-family: inherit;
 }
-.pet-mood { font-size: 14px; color: var(--text-light); margin-bottom: 16px; }
+.pet-name input:focus { border-bottom-color: var(--green); }
+.pet-mood { font-size: 14px; color: var(--text-light); min-height: 22px; }
+.pet-level { font-size: 12px; color: var(--soil); margin-top: 2px; }
 
-.stat-row { display:flex; gap:12px; margin-bottom: 8px; align-items: center; }
-.stat-label { font-size: 20px; width: 32px; text-align: center; }
-.stat-bar-bg {
-  flex:1; height: 16px; background: #F0E0E5; border-radius: 10px; overflow: hidden;
-}
-.stat-bar-fill {
-  height: 100%; border-radius: 10px; transition: width .5s, background .5s;
-}
-.stat-bar-fill.hunger { background: linear-gradient(90deg, #FF8BA7, #FFA94D); }
-.stat-bar-fill.happiness { background: linear-gradient(90deg, #FFC6C7, #FFD166); }
-.stat-val { font-size:13px; color: var(--text-light); width: 36px; text-align: right; }
+/* 四项状态条 */
+.stats-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.stat-item { }
+.stat-item .stat-header { display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px; }
+.stat-item .stat-header span:first-child { color: var(--text-light); }
+.stat-item .stat-header span:last-child { font-weight:600; font-size:13px; }
+.stat-bar { height: 10px; background: #EDE8E2; border-radius: 6px; overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 6px; transition: width .5s, background .4s; }
+.fill-hunger { background: #E8B85A; }
+.fill-happy { background: #E07B6C; }
+.fill-energy { background: #7BAAC4; }
+.fill-clean { background: #6B9B77; }
 
-.pet-actions { display: flex; gap: 12px; margin-top: 20px; }
-.pet-action-btn {
-  flex:1; padding: 14px; border: none; border-radius: 16px;
-  font-size: 15px; font-weight: 600; cursor: pointer;
-  transition: transform .2s, box-shadow .2s;
+/* 宠物操作 */
+.pet-actions { display:flex; gap: 8px; flex-wrap: wrap; }
+.action-btn {
+  flex:1; min-width: 70px; padding: 12px 6px; border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: #F5F1EC;
 }
-.pet-action-btn:active { transform: scale(0.95); }
-.btn-feed { background: #FFE0D0; color: #E86A58; }
-.btn-play { background: #FFF0D0; color: #E8A020; }
-.btn-feed:hover { box-shadow: 0 4px 15px rgba(232,106,88,.2); }
-.btn-play:hover { box-shadow: 0 4px 15px rgba(232,160,32,.2); }
-.pet-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.cooldown { font-size:12px; color: var(--text-light); margin-top: 8px; }
+.action-btn:active { transform: scale(0.95); }
+.action-btn .btn-emoji { font-size: 22px; }
+.action-btn.feed { background: #FFF3E0; color: #C78A3C; }
+.action-btn.play { background: #FFECEC; color: #C75B5B; }
+.action-btn.rest { background: #EDF4FA; color: #5A8AA8; }
+.action-btn.wash { background: #EDF7EF; color: #4F8768; }
+.action-btn:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(30%); }
+.cooldown-text { text-align: center; font-size: 12px; color: var(--text-light); margin-top: 10px; min-height: 18px; }
 
-/* ====== 花园卡片 ====== */
-.garden-card {
-  background: var(--card); border-radius: var(--radius); padding: 24px;
-  box-shadow: var(--shadow);
-}
-.garden-title { font-size: 16px; font-weight: 700; text-align: center; margin-bottom: 16px; }
-.garden-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+/* ====== 花园 ====== */
+.garden-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .garden-plot {
-  aspect-ratio: 1; border-radius: 16px; background: #FBF0E8;
+  aspect-ratio: 1; border-radius: 14px; background: #F5EDE3;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; transition: transform .2s, box-shadow .2s;
-  border: 2px dashed #E8D5C4; position: relative; overflow: hidden;
+  cursor: pointer; transition: all .2s; border: 2px dashed #D8CEC0;
+  position: relative; user-select: none;
 }
-.garden-plot:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
-.garden-plot.occupied { border: 2px solid var(--green); background: #F5FAF6; }
-.garden-plot .plant-emoji { font-size: 36px; transition: transform .3s; }
-.garden-plot .plot-label { font-size: 10px; color: var(--text-light); margin-top: 4px; }
-.garden-plot .water-indicator {
-  position: absolute; top: 6px; right: 8px; font-size: 12px;
-}
+.garden-plot:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+.garden-plot.planted { border: 2px solid var(--green); background: #F2F8F3; }
+.garden-plot.needs-water { border-color: #E8B85A; background: #FFFCF5; }
+.garden-plot.ready-harvest { border-color: #E07B6C; background: #FFF8F6; animation: harvestPulse 2s infinite; }
+@keyframes harvestPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(224,123,108,.3); } 50% { box-shadow: 0 0 0 8px rgba(224,123,108,0); } }
+.garden-plot .plant-emoji { font-size: 36px; transition: transform .2s; }
+.garden-plot .plot-label { font-size: 11px; color: var(--text-light); margin-top: 2px; text-align: center; }
+.garden-plot .plot-water { position:absolute; top:6px; right:8px; font-size: 12px; }
 
-.plant-selector { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
-.plant-option {
-  padding: 8px 14px; border: 2px solid #F0E0E5; border-radius: 12px;
-  background: white; cursor: pointer; font-size: 13px; transition: all .2s;
+/* 种子选择器 */
+.seed-section { margin-top: 6px; }
+.seed-section .seed-label { font-size: 13px; color: var(--text-light); margin-bottom: 8px; text-align: center; }
+.seed-list { display:flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.seed-option {
+  padding: 8px 12px; border: 2px solid #E8E3DC; border-radius: 10px;
+  background: white; cursor: pointer; font-size: 13px; transition: all .15s;
 }
-.plant-option:hover { border-color: var(--pink); background: #FFF5F5; }
+.seed-option:hover { border-color: var(--green); }
+.seed-option.selected { border-color: var(--green); background: #EDF7EF; font-weight: 600; }
+.seed-option .seed-emoji { margin-right: 2px; }
 
-/* ====== 活动日志 ====== */
-.log-card {
-  background: var(--card); border-radius: var(--radius); padding: 20px 24px;
-  box-shadow: var(--shadow);
-}
-.log-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; text-align: center; }
-.log-list { list-style: none; max-height: 400px; overflow-y: auto; }
+/* ====== 日志 ====== */
+.log-list { list-style: none; max-height: 440px; overflow-y: auto; }
 .log-item {
-  display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #F5F0F0;
-  font-size: 14px;
+  display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #F2EFEB;
+  font-size: 13px; align-items: center;
 }
-.log-item .log-icon { font-size: 24px; flex-shrink: 0; }
-.log-item .log-content { flex:1; }
-.log-item .log-time { font-size: 11px; color: var(--text-light); }
-.log-empty { text-align: center; color: var(--text-light); padding: 30px; font-size: 14px; }
+.log-item .log-icon { font-size: 26px; flex-shrink: 0; }
+.log-item .log-text { flex:1; line-height: 1.4; }
+.log-item .log-time { font-size: 11px; color: var(--text-light); white-space: nowrap; }
+.log-empty { text-align: center; color: var(--text-light); padding: 32px; font-size: 14px; }
 
-/* ====== 底部导航栏 ====== */
+/* ====== 底部导航 ====== */
 .bottom-nav {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  max-width: 480px; width: 100%; background: var(--card);
-  display: flex; padding: 8px 16px 20px; gap: 8px;
-  box-shadow: 0 -4px 20px rgba(0,0,0,.05); z-index: 100;
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  max-width: 500px; width: 100%; background: var(--white);
+  display: flex; padding: 6px 12px 16px; gap: 6px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,.04); z-index: 100;
 }
 .nav-item {
-  flex:1; padding: 8px; border: none; background: transparent;
-  font-size: 13px; cursor: pointer; border-radius: 12px;
-  transition: all .3s; text-align: center; color: var(--text-light);
+  flex:1; padding: 6px; border: none; background: transparent;
+  font-size: 12px; cursor: pointer; border-radius: 10px;
+  color: var(--text-light); text-align: center; transition: all .2s;
 }
-.nav-item.active { background: #FFF0F3; color: var(--pink); font-weight: 600; }
-.nav-item .nav-icon { font-size: 24px; display: block; margin-bottom: 2px; }
+.nav-item.active { background: #F0F4F1; color: var(--green); font-weight: 600; }
+.nav-item .nav-icon { font-size: 22px; display: block; margin-bottom: 1px; }
 
-/* ====== Toast 提示 ====== */
+/* ====== Toast ====== */
 .toast {
-  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-  background: #594A4E; color: white; padding: 12px 24px;
+  position:fixed; top: 24px; left: 50%; transform: translateX(-50%);
+  background: #3D322C; color: white; padding: 10px 22px;
   border-radius: 20px; font-size: 14px; z-index: 2000;
   opacity: 0; transition: opacity .3s; pointer-events: none;
 }
 .toast.show { opacity: 1; }
 
 /* ====== 响应式 ====== */
-@media (max-width: 400px) {
-  .pet-emoji { font-size: 80px; }
-  .countdown-card .days { font-size: 34px; }
+@media (max-width: 380px) {
+  .pet-emoji { font-size: 90px; }
+  .stats-grid { gap: 8px; }
+  .action-btn { padding: 10px 4px; font-size: 12px; }
 }
 </style>
 </head>
 <body>
 
-<!-- 浮动爱心 -->
-<div class="hearts-container" id="hearts"></div>
-
-<!-- PIN 锁屏 -->
+<!-- PIN -->
 <div class="pin-overlay" id="pinOverlay">
   <div class="pin-box">
-    <h1>💕</h1>
-    <h2>我们的秘密花园</h2>
-    <p class="hint">输入你们的暗号进入</p>
+    <div class="icon">🌱</div>
+    <h2>秘密花园</h2>
+    <p class="hint">输入暗号，进入你们的小世界</p>
     <input type="password" class="pin-input" id="pinInput" maxlength="6" placeholder="******" autocomplete="off">
-    <button class="pin-btn" onclick="checkPin()">🌸 进入</button>
+    <button class="pin-btn" onclick="checkPin()">进入</button>
     <p class="pin-error" id="pinError"></p>
-    <p style="font-size:12px;color:var(--text-light);margin-top:12px;">默认暗号：1314</p>
+    <p style="font-size:12px;color:var(--text-light);margin-top:10px;">默认暗号：1314</p>
   </div>
 </div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- 主应用 -->
+<!-- 主体 -->
 <div class="app-container" id="app">
-  <!-- 头部 -->
   <div class="header">
-    <div class="avatar-row">👩‍❤️‍👨</div>
-    <h1>我们的秘密花园</h1>
-    <p class="subtitle">一起养宠 · 一起种花 · 一起生活</p>
+    <div class="title">🌱 秘密花园</div>
+    <div class="subtitle">养一只宠物 · 种一片菜园 · 两个人的小世界</div>
   </div>
 
-  <!-- 倒计时 -->
-  <div class="countdown-card">
-    <div class="label">💝 我们已经在一起</div>
-    <div class="days" id="countdownDays">--</div>
-    <div class="days-sub">天</div>
+  <!-- 标签切换 -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('pet')">🐱 宠物</button>
+    <button class="tab-btn" onclick="switchTab('garden')">🌱 菜园</button>
+    <button class="tab-btn" onclick="switchTab('log')">📋 记录</button>
   </div>
 
-  <!-- 标签内容 -->
+  <!-- 宠物面板 -->
   <div class="panel active" id="panelPet">
-    <div class="pet-card">
-      <div class="pet-emoji" id="petEmoji" onclick="petReaction()">🐱</div>
-      <div class="pet-name" id="petName">小可爱</div>
-      <div class="pet-mood" id="petMood">心情很好~</div>
-      <div class="stat-row">
-        <span class="stat-label">🍖</span>
-        <div class="stat-bar-bg"><div class="stat-bar-fill hunger" id="hungerBar" style="width:100%"></div></div>
-        <span class="stat-val" id="hungerVal">100</span>
+    <div class="card">
+      <div class="pet-display">
+        <div class="pet-emoji" id="petEmoji" onclick="clickPet()">🐱</div>
+        <div class="pet-name"><input id="petNameInput" value="小可爱" maxlength="8" onchange="renamePet(this.value)"></div>
+        <div class="pet-mood" id="petMood">心情不错~</div>
+        <div class="pet-level" id="petLevel">Lv.1 · 累计照顾 0 天</div>
       </div>
-      <div class="stat-row">
-        <span class="stat-label">😊</span>
-        <div class="stat-bar-bg"><div class="stat-bar-fill happiness" id="happinessBar" style="width:100%"></div></div>
-        <span class="stat-val" id="happinessVal">100</span>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-header"><span>🍖 饱腹</span><span id="hungerVal">100</span></div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-hunger" id="hungerBar" style="width:100%"></div></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-header"><span>😊 开心</span><span id="happyVal">100</span></div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-happy" id="happyBar" style="width:100%"></div></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-header"><span>⚡ 精力</span><span id="energyVal">100</span></div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-energy" id="energyBar" style="width:100%"></div></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-header"><span>🛁 清洁</span><span id="cleanVal">100</span></div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-clean" id="cleanBar" style="width:100%"></div></div>
+        </div>
       </div>
       <div class="pet-actions">
-        <button class="pet-action-btn btn-feed" id="btnFeed" onclick="feedPet()">🍖 喂食</button>
-        <button class="pet-action-btn btn-play" id="btnPlay" onclick="playPet()">🎾 玩耍</button>
+        <button class="action-btn feed" id="btnFeed" onclick="feedPet()">
+          <span class="btn-emoji">🍖</span>喂食
+        </button>
+        <button class="action-btn play" id="btnPlay" onclick="playPet()">
+          <span class="btn-emoji">🎾</span>玩耍
+        </button>
+        <button class="action-btn rest" id="btnRest" onclick="restPet()">
+          <span class="btn-emoji">😴</span>睡觉
+        </button>
+        <button class="action-btn wash" id="btnWash" onclick="washPet()">
+          <span class="btn-emoji">🛁</span>洗澡
+        </button>
       </div>
-      <div class="cooldown" id="cooldownText"></div>
+      <div class="cooldown-text" id="cooldownText"></div>
     </div>
   </div>
 
+  <!-- 花园面板 -->
   <div class="panel" id="panelGarden">
-    <div class="garden-card">
-      <div class="garden-title">🌱 我们的小菜园</div>
+    <div class="card">
+      <div style="text-align:center;font-weight:700;font-size:16px;margin-bottom:12px;">🌱 小菜园</div>
       <div class="garden-grid" id="gardenGrid"></div>
-      <div style="text-align:center;font-size:13px;color:var(--text-light);margin-bottom:12px;">
-        💡 点击空地播种 · 点击已种的浇水
+      <div style="text-align:center;font-size:12px;color:var(--text-light);margin-bottom:12px;">
+        💡 选种子 → 点空地播种 → 浇水照料 → 成熟收获
       </div>
-      <div class="plant-selector" id="plantSelector">
-        <button class="plant-option" onclick="selectSeed('sunflower')">🌻 向日葵</button>
-        <button class="plant-option" onclick="selectSeed('rose')">🌹 玫瑰</button>
-        <button class="plant-option" onclick="selectSeed('strawberry')">🍓 草莓</button>
-        <button class="plant-option" onclick="selectSeed('tomato')">🍅 番茄</button>
-        <button class="plant-option" onclick="selectSeed('cabbage')">🥬 白菜</button>
-        <button class="plant-option" onclick="selectSeed('cactus')">🌵 仙人掌</button>
+      <div class="seed-section">
+        <div class="seed-label" id="seedLabel">👆 请先选择种子</div>
+        <div class="seed-list" id="seedList"></div>
       </div>
-      <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px;" id="selectedSeedText">
-        👆 先选择种子，再点击空地播种
-      </p>
     </div>
   </div>
 
+  <!-- 日志面板 -->
   <div class="panel" id="panelLog">
-    <div class="log-card">
-      <div class="log-title">📝 互动记录</div>
+    <div class="card">
+      <div style="text-align:center;font-weight:700;font-size:16px;margin-bottom:12px;">📋 互动记录</div>
       <ul class="log-list" id="logList">
-        <li class="log-empty">还没有互动记录~<br>快去喂宠物或种菜吧！</li>
+        <li class="log-empty">还没有记录~<br>快去照顾宠物或种菜吧 🌱</li>
       </ul>
     </div>
   </div>
@@ -330,530 +309,395 @@ body::before {
 
 <!-- 底部导航 -->
 <div class="bottom-nav" id="bottomNav">
-  <button class="nav-item active" onclick="switchTab('pet')">
-    <span class="nav-icon">🐱</span>宠物
-  </button>
-  <button class="nav-item" onclick="switchTab('garden')">
-    <span class="nav-icon">🌱</span>菜园
-  </button>
-  <button class="nav-item" onclick="switchTab('log')">
-    <span class="nav-icon">📝</span>记录
-  </button>
-  <button class="nav-item" onclick="openSettings()">
-    <span class="nav-icon">⚙️</span>设置
-  </button>
+  <button class="nav-item active" onclick="switchTab('pet')"><span class="nav-icon">🐱</span>宠物</button>
+  <button class="nav-item" onclick="switchTab('garden')"><span class="nav-icon">🌱</span>菜园</button>
+  <button class="nav-item" onclick="switchTab('log')"><span class="nav-icon">📋</span>记录</button>
 </div>
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
 <script>
-// ==================== 配置区 ====================
-// 🔧 替换成你的 Supabase 信息（部署前改这里！）
+// ==================== 配置 ====================
 const SUPABASE_URL = 'https://ddoqigftcyvlpswowocs.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_tDUVrR31skXEveQN0khzQA_RgIpvFQr';
-
-// 🔧 设置你们的纪念日（格式：年/月/日）
-const ANNIVERSARY = '2025-04-06';
-
-// 🔧 设置进入暗号（可以改成你们的专属暗号）
 const SECRET_PIN = '1314';
-// ================================================
 
-// ==================== 全局状态 ====================
-let supabase = null;
-let isOnline = false;       // 是否已连接 Supabase
-let currentTab = 'pet';
-let selectedSeed = null;
-let petState = { hunger: 100, happiness: 100, lastFed: Date.now(), lastPlayed: Date.now(), name: '小可爱' };
-let gardenPlots = Array(6).fill(null).map((_, i) => ({
-  index: i, plant: null, plantedAt: null, wateredAt: null, stage: 0
-}));
-let activityLog = [];
-let cooldowns = { feed: 0, play: 0 };
+// ==================== 种子库 ====================
+const SEED_LIBRARY = {
+  sunflower:  { name:'向日葵', emoji:'🌻', growTime:3, harvestEmoji:'🌻', desc:'阳光小太阳，3天成熟' },
+  rose:       { name:'玫瑰',   emoji:'🌹', growTime:4, harvestEmoji:'🌹', desc:'浪漫代表，4天成熟' },
+  strawberry: { name:'草莓',   emoji:'🍓', growTime:3, harvestEmoji:'🍓', desc:'甜甜的，3天成熟' },
+  tomato:     { name:'番茄',   emoji:'🍅', growTime:3, harvestEmoji:'🍅', desc:'营养蔬菜，3天成熟' },
+  carrot:     { name:'胡萝卜', emoji:'🥕', growTime:4, harvestEmoji:'🥕', desc:'地下宝藏，4天成熟' },
+  cabbage:    { name:'白菜',   emoji:'🥬', growTime:3, harvestEmoji:'🥬', desc:'翠绿蔬菜，3天成熟' },
+  pepper:     { name:'辣椒',   emoji:'🌶️', growTime:4, harvestEmoji:'🌶️', desc:'火辣热情，4天成熟' },
+  corn:       { name:'玉米',   emoji:'🌽', growTime:4, harvestEmoji:'🌽', desc:'金黄饱满，4天成熟' },
+  cactus:     { name:'仙人掌', emoji:'🌵', growTime:5, harvestEmoji:'🌵', desc:'坚韧不拔，5天成熟' },
+};
+
+// 生长阶段表情
+const STAGE_EMOJIS = ['🟫', '🌰', '🌱', '🌿'];
+
+// ==================== 状态 ====================
+let supabase = null, isOnline = false, selectedSeed = null;
+let pet = { hunger:100, happy:100, energy:100, clean:100, lastFed:0, lastPlayed:0, lastRested:0, lastWashed:0, name:'小可爱', careDays:0, level:1 };
+let garden = Array(9).fill(null).map((_,i)=>({ idx:i, seed:null, plantedAt:null, wateredAt:null, stage:0, waterCount:0 }));
+let logs = [];
+let cooldowns = { feed:0, play:0, rest:0, wash:0 };
+let decayInterval = null;
+
+// ==================== 动态加载 Supabase ====================
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = () => reject(new Error('load fail'));
+    document.head.appendChild(s);
+  });
+}
 
 // ==================== 初始化 ====================
 async function init() {
-  // 尝试连接 Supabase
-  if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
-    try {
-      supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      const { data } = await supabase.from('pet').select('*').single();
-      if (data) {
-        isOnline = true;
-        console.log('✅ 已连接 Supabase，双人同步模式');
-      }
-    } catch(e) {
-      console.log('⚠️ Supabase 连接失败，使用本地模式');
-    }
-  }
+  // 尝试 Supabase
+  try {
+    await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js');
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data } = await supabase.from('pet').select('*').single();
+    if (data) { isOnline = true; console.log('✅ 云端同步模式'); }
+  } catch(e) { console.log('📦 本地模式'); }
 
-  if (isOnline) {
-    await loadFromCloud();
-    setupRealtime();
-  } else {
-    loadFromLocal();
-  }
+  if (isOnline) { await loadCloud(); setupRealtime(); }
+  else { loadLocal(); }
 
-  createHearts();
+  applyDecay();
   renderAll();
-  startDecayTimer();
-  startCooldownTimer();
-  startCountdownTimer();
-
-  // 自动聚焦 PIN 输入框
+  startTimers();
   document.getElementById('pinInput').focus();
 }
 
-// ==================== PIN 验证 ====================
+// ==================== PIN ====================
 function checkPin() {
   const input = document.getElementById('pinInput').value.trim();
   if (input === SECRET_PIN) {
     document.getElementById('pinOverlay').classList.add('hidden');
     document.getElementById('pinError').textContent = '';
-    showToast('欢迎回来 💕');
+    toast('欢迎回来 🌱');
   } else {
-    document.getElementById('pinError').textContent = '暗号不对哦，再试试~';
+    document.getElementById('pinError').textContent = '暗号不对，再试试~';
     document.getElementById('pinInput').value = '';
     document.getElementById('pinInput').focus();
   }
 }
-document.getElementById('pinInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') checkPin();
-});
+document.getElementById('pinInput').addEventListener('keydown', e => { if(e.key==='Enter') checkPin(); });
 
-// ==================== 数据层：云端 ====================
-async function loadFromCloud() {
+// ==================== 云端数据 ====================
+async function loadCloud() {
   try {
-    const [petRes, gardenRes, logRes] = await Promise.all([
+    const [pr, gr, lr] = await Promise.all([
       supabase.from('pet').select('*').single(),
       supabase.from('garden').select('*').order('plot_index'),
-      supabase.from('activities').select('*').order('created_at', { ascending: false }).limit(50)
+      supabase.from('activities').select('*').order('created_at',{ascending:false}).limit(60)
     ]);
-    if (petRes.data) {
-      petState = {
-        hunger: petRes.data.hunger,
-        happiness: petRes.data.happiness,
-        lastFed: new Date(petRes.data.last_fed).getTime(),
-        lastPlayed: new Date(petRes.data.last_played).getTime(),
-        name: petRes.data.name || '小可爱'
-      };
-    }
-    if (gardenRes.data && gardenRes.data.length > 0) {
-      gardenPlots = gardenRes.data.map(p => ({
-        index: p.plot_index,
-        plant: p.plant_type,
-        plantedAt: p.planted_at ? new Date(p.planted_at).getTime() : null,
-        wateredAt: p.watered_at ? new Date(p.watered_at).getTime() : null,
-        stage: p.stage || 0
-      }));
-    }
-    if (logRes.data) {
-      activityLog = logRes.data.map(l => ({
-        icon: l.icon || '📝',
-        text: l.action,
-        time: new Date(l.created_at).getTime(),
-        user: l.user_name || '某人'
-      }));
-    }
+    if (pr.data) pet = { ...pet, ...pr.data, lastFed: ts(pr.data.last_fed), lastPlayed: ts(pr.data.last_played), lastRested: ts(pr.data.last_rested), lastWashed: ts(pr.data.last_washed) };
+    if (gr.data?.length) garden = gr.data.map(r=>({ idx:r.plot_index, seed:r.plant_type, plantedAt:ts(r.planted_at), wateredAt:ts(r.watered_at), stage:r.stage||0, waterCount:r.water_count||0 }));
+    if (lr.data) logs = lr.data.map(r=>({ icon:r.icon, text:r.action, ts:ts(r.created_at) }));
     applyDecay();
-  } catch(e) {
-    console.error('加载云端数据失败:', e);
-    loadFromLocal();
-  }
+  } catch(e) { console.error(e); loadLocal(); }
 }
 
 async function savePet() {
-  if (!isOnline) { saveToLocal(); return; }
-  try {
-    await supabase.from('pet').upsert({
-      id: 1,
-      hunger: petState.hunger,
-      happiness: petState.happiness,
-      last_fed: new Date(petState.lastFed).toISOString(),
-      last_played: new Date(petState.lastPlayed).toISOString(),
-      name: petState.name
-    });
-  } catch(e) { console.error('保存宠物失败:', e); }
+  if (!isOnline) { saveLocal(); return; }
+  await supabase.from('pet').upsert({
+    id:1, hunger:pet.hunger, happiness:pet.happy, energy:pet.energy, cleanliness:pet.clean,
+    last_fed:iso(pet.lastFed), last_played:iso(pet.lastPlayed), last_rested:iso(pet.lastRested), last_washed:iso(pet.lastWashed),
+    name:pet.name, care_days:pet.careDays, level:pet.level
+  });
 }
 
 async function saveGarden() {
-  if (!isOnline) { saveToLocal(); return; }
-  try {
-    const rows = gardenPlots.map(p => ({
-      plot_index: p.index,
-      plant_type: p.plant,
-      planted_at: p.plantedAt ? new Date(p.plantedAt).toISOString() : null,
-      watered_at: p.wateredAt ? new Date(p.wateredAt).toISOString() : null,
-      stage: p.stage
-    }));
-    await supabase.from('garden').upsert(rows);
-  } catch(e) { console.error('保存花园失败:', e); }
+  if (!isOnline) { saveLocal(); return; }
+  await supabase.from('garden').upsert(garden.map(p=>({
+    plot_index:p.idx, plant_type:p.seed, planted_at:iso(p.plantedAt), watered_at:iso(p.wateredAt),
+    stage:p.stage, water_count:p.waterCount
+  })));
 }
 
-async function addLog(icon, action) {
-  const entry = { icon, text: action, time: Date.now(), user: isOnline ? '' : '我' };
-  activityLog.unshift(entry);
-  if (activityLog.length > 50) activityLog.length = 50;
-
-  if (isOnline) {
-    try {
-      await supabase.from('activities').insert({
-        icon, action, user_name: '另一半'
-      });
-    } catch(e) { console.error('保存日志失败:', e); }
-  }
-  saveToLocal();
-  renderLog();
+async function addLog(icon, text) {
+  logs.unshift({ icon, text, ts: Date.now() });
+  if (logs.length > 60) logs.length = 60;
+  if (isOnline) await supabase.from('activities').insert({ icon, action:text });
+  saveLocal(); renderLog();
 }
 
 function setupRealtime() {
-  if (!isOnline) return;
-  supabase.channel('pet-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'pet' }, async () => {
-      await loadFromCloud();
-      renderPet();
+  ['pet','garden','activities'].forEach(tbl => {
+    supabase.channel(tbl).on('postgres_changes',{event:'*',schema:'public',table:tbl},async()=>{
+      await loadCloud(); renderAll();
     }).subscribe();
-  supabase.channel('garden-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'garden' }, async () => {
-      await loadFromCloud();
-      renderGarden();
-    }).subscribe();
-  supabase.channel('activity-changes')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activities' }, async () => {
-      const { data } = await supabase.from('activities').select('*').order('created_at', { ascending: false }).limit(50);
-      if (data) {
-        activityLog = data.map(l => ({
-          icon: l.icon || '📝',
-          text: l.action,
-          time: new Date(l.created_at).getTime(),
-          user: l.user_name || '某人'
-        }));
-        renderLog();
-      }
-    }).subscribe();
+  });
 }
 
-// ==================== 数据层：本地 ====================
-function loadFromLocal() {
+// ==================== 本地数据 ====================
+function loadLocal() {
   try {
-    const saved = JSON.parse(localStorage.getItem('loveSpace') || '{}');
-    if (saved.pet) petState = { ...petState, ...saved.pet };
-    if (saved.garden) gardenPlots = saved.garden;
-    if (saved.log) activityLog = saved.log;
+    const s = JSON.parse(localStorage.getItem('gardenApp')||'{}');
+    if (s.pet) pet = { ...pet, ...s.pet };
+    if (s.garden) garden = s.garden;
+    if (s.logs) logs = s.logs;
     applyDecay();
   } catch(e) {}
 }
-
-function saveToLocal() {
-  try {
-    localStorage.setItem('loveSpace', JSON.stringify({
-      pet: petState,
-      garden: gardenPlots,
-      log: activityLog
-    }));
-  } catch(e) {}
+function saveLocal() {
+  localStorage.setItem('gardenApp', JSON.stringify({ pet, garden, logs }));
 }
 
-// ==================== 宠物逻辑 ====================
+// ==================== 衰减 ====================
 function applyDecay() {
   const now = Date.now();
-  const hungerLoss = Math.floor((now - petState.lastFed) / (10 * 60 * 1000)); // 每10分钟-1
-  const happinessLoss = Math.floor((now - petState.lastPlayed) / (15 * 60 * 1000)); // 每15分钟-1
-  petState.hunger = Math.max(0, Math.min(100, petState.hunger - hungerLoss));
-  petState.happiness = Math.max(0, Math.min(100, petState.happiness - happinessLoss));
+  pet.hunger  = Math.max(0, Math.min(100, pet.hunger  - Math.floor((now - pet.lastFed)    / (8*60*1000)) ));
+  pet.happy   = Math.max(0, Math.min(100, pet.happy   - Math.floor((now - pet.lastPlayed) / (12*60*1000)) ));
+  pet.energy  = Math.max(0, Math.min(100, pet.energy  - Math.floor((now - pet.lastRested) / (6*60*1000)) ));
+  pet.clean   = Math.max(0, Math.min(100, pet.clean   - Math.floor((now - pet.lastWashed) / (16*60*1000)) ));
 }
 
+// ==================== 宠物操作 ====================
 function feedPet() {
   if (cooldowns.feed > 0) return;
-  if (petState.hunger >= 100) { showToast('已经吃饱啦~ 🐱'); return; }
-  petState.hunger = Math.min(100, petState.hunger + 30);
-  petState.lastFed = Date.now();
-  cooldowns.feed = 30; // 30秒冷却
-  savePet();
-  addLog('🍖', '喂了宠物，饱饱的！');
-  renderPet();
-  showToast('喂食成功！🍖 +30');
+  if (pet.hunger >= 100) { toast('已经吃饱了~'); return; }
+  pet.hunger = Math.min(100, pet.hunger + 35);
+  pet.lastFed = Date.now();
+  pet.energy = Math.min(100, pet.energy + 5);
+  recordCare();
+  cooldowns.feed = 20;
+  savePet(); addLog('🍖', '喂食了一次'); renderPet();
+  toast('🍖 饱腹 +35');
 }
-
 function playPet() {
   if (cooldowns.play > 0) return;
-  if (petState.happiness >= 100) { showToast('已经很开心啦~ 😸'); return; }
-  petState.happiness = Math.min(100, petState.happiness + 30);
-  petState.lastPlayed = Date.now();
+  if (pet.happy >= 100 && pet.energy < 10) { toast('太累了，先休息吧~'); return; }
+  pet.happy = Math.min(100, pet.happy + 30);
+  pet.lastPlayed = Date.now();
+  pet.energy = Math.max(0, pet.energy - 10);
+  pet.clean = Math.max(0, pet.clean - 5);
+  pet.hunger = Math.max(0, pet.hunger - 8);
+  recordCare();
   cooldowns.play = 30;
-  savePet();
-  addLog('🎾', '和宠物玩了会儿，超开心！');
-  renderPet();
-  showToast('玩耍成功！🎾 +30');
+  savePet(); addLog('🎾', '陪宠物玩耍'); renderPet();
+  toast('🎾 开心 +30');
+}
+function restPet() {
+  if (cooldowns.rest > 0) return;
+  if (pet.energy >= 100) { toast('精力充沛，不想睡~'); return; }
+  pet.energy = Math.min(100, pet.energy + 50);
+  pet.lastRested = Date.now();
+  pet.hunger = Math.max(0, pet.hunger - 12);
+  recordCare();
+  cooldowns.rest = 60;
+  savePet(); addLog('😴', '宠物睡了一觉'); renderPet();
+  toast('😴 精力 +50');
+}
+function washPet() {
+  if (cooldowns.wash > 0) return;
+  if (pet.clean >= 100) { toast('已经很干净了~'); return; }
+  pet.clean = Math.min(100, pet.clean + 45);
+  pet.lastWashed = Date.now();
+  pet.happy = Math.min(100, pet.happy + 5);
+  recordCare();
+  cooldowns.wash = 45;
+  savePet(); addLog('🛁', '给宠物洗了澡'); renderPet();
+  toast('🛁 清洁 +45');
 }
 
-function petReaction() {
-  const emoji = document.getElementById('petEmoji');
-  emoji.style.transform = 'scale(1.2) rotate(10deg)';
-  setTimeout(() => { emoji.style.transform = ''; }, 200);
-  const reactions = ['喵~', '嗷呜~', '咕噜咕噜~', '蹭蹭你~', '✨'];
-  showToast(reactions[Math.floor(Math.random() * reactions.length)]);
-}
-
-function getPetEmoji() {
-  const h = petState.hunger, hp = petState.happiness;
-  if (h >= 70 && hp >= 70) return '😸';
-  if (h >= 40 && hp >= 40) return '🐱';
-  if (h < 20) return '😿';
-  if (hp < 20) return '😾';
-  return '🐱';
-}
-
-function getPetMood() {
-  const h = petState.hunger, hp = petState.happiness;
-  if (h >= 70 && hp >= 70) return '心情超好！喵喵叫~';
-  if (h < 20 && hp < 20) return '又饿又不开心…快陪陪我！';
-  if (h < 20) return '肚子好饿…想要吃的！';
-  if (hp < 20) return '好无聊…陪我玩会儿吧！';
-  if (h < 50 || hp < 50) return '还算不错，但要记得照顾我哦~';
-  return '心情不错~';
-}
-
-// ==================== 花园逻辑 ====================
-function selectSeed(type) {
-  selectedSeed = type;
-  const names = { sunflower: '🌻 向日葵', rose: '🌹 玫瑰', strawberry: '🍓 草莓', tomato: '🍅 番茄', cabbage: '🥬 白菜', cactus: '🌵 仙人掌' };
-  document.getElementById('selectedSeedText').textContent = '✅ 已选择：' + names[type] + ' — 现在点击空地播种';
-}
-
-function clickPlot(index) {
-  const plot = gardenPlots[index];
-  if (!plot.plant) {
-    // 空地 → 播种
-    if (!selectedSeed) { showToast('👆 请先在下方选择种子'); return; }
-    plot.plant = selectedSeed;
-    plot.plantedAt = Date.now();
-    plot.wateredAt = Date.now();
-    plot.stage = 1;
-    selectedSeed = null;
-    document.getElementById('selectedSeedText').textContent = '👆 先选择种子，再点击空地播种';
-    saveGarden();
-    addLog('🌰', `在 ${index+1} 号地种下了种子！`);
-    renderGarden();
-    showToast('播种成功！记得浇水哦~ 🌰');
-  } else {
-    // 已种 → 浇水或收获
-    const hoursSinceWater = (Date.now() - plot.wateredAt) / (1000 * 60 * 60);
-    if (plot.stage >= 4) {
-      // 成熟了 → 收获
-      const plantNames = { sunflower: '向日葵', rose: '玫瑰', strawberry: '草莓', tomato: '番茄', cabbage: '白菜', cactus: '仙人掌' };
-      addLog('🧺', `收获了 ${index+1} 号地的${plantNames[plot.plant] || '植物'}！`);
-      plot.plant = null;
-      plot.plantedAt = null;
-      plot.wateredAt = null;
-      plot.stage = 0;
-      saveGarden();
-      renderGarden();
-      showToast('收获成功！🧺');
-    } else if (hoursSinceWater > 0.5) {
-      // 可以浇水（每30分钟可以浇一次）
-      plot.wateredAt = Date.now();
-      if (plot.stage < 4) plot.stage++;
-      saveGarden();
-      addLog('💧', `给 ${index+1} 号地的植物浇了水！`);
-      renderGarden();
-      showToast('浇水成功！💧 植物长大了一点~');
-    } else {
-      showToast('刚刚浇过水了，等会儿再来吧~ ⏳');
-    }
+function recordCare() {
+  const now = new Date();
+  const today = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+  if (pet._lastCareDate !== today) {
+    pet._lastCareDate = today;
+    pet.careDays = (pet.careDays||0) + 1;
+    pet.level = Math.floor(pet.careDays / 3) + 1;
   }
 }
 
-function getPlantEmoji(plot) {
-  if (!plot.plant) return '';
-  const stages = {
-    sunflower: ['', '🌰', '🌱', '🌿', '🌻', '🌻'],
-    rose: ['', '🌰', '🌱', '🌿', '🌹', '🌹'],
-    strawberry: ['', '🌰', '🌱', '🌿', '🍓', '🍓'],
-    tomato: ['', '🌰', '🌱', '🌿', '🍅', '🍅'],
-    cabbage: ['', '🌰', '🌱', '🌿', '🥬', '🥬'],
-    cactus: ['', '🌰', '🌱', '🌵', '🌵', '🌵'],
-  };
-  return stages[plot.plant]?.[Math.min(plot.stage, 4)] || '🌱';
+function clickPet() {
+  const el = document.getElementById('petEmoji');
+  el.style.transform = 'scale(1.15) rotate(8deg)';
+  setTimeout(() => el.style.transform = '', 180);
+  const reactions = ['喵呜~','嗷~','咕噜咕噜~','蹭了蹭你','汪！','叽叽~','✨'];
+  toast(reactions[Math.floor(Math.random()*reactions.length)]);
 }
 
-function getPlotStatus(plot) {
-  if (!plot.plant) return '空地';
-  if (plot.stage >= 4) return '可收获！';
-  const hoursSinceWater = (Date.now() - plot.wateredAt) / (1000 * 60 * 60);
-  if (hoursSinceWater > 24) return '需要浇水！';
-  return `第${plot.stage}天`;
+function renamePet(name) {
+  pet.name = name || '小可爱';
+  savePet(); addLog('✏️', `改名：${pet.name}`); renderPet();
+}
+
+// ==================== 花园操作 ====================
+function selectSeed(key) {
+  selectedSeed = key;
+  document.getElementById('seedLabel').textContent = '✅ 已选：' + SEED_LIBRARY[key].name + ' — 点击空地播种';
+  renderSeedList();
+}
+
+function clickPlot(idx) {
+  const plot = garden[idx];
+  if (!plot.seed) {
+    // 播种
+    if (!selectedSeed) { toast('👆 请先在上方选择一种种子'); return; }
+    plot.seed = selectedSeed;
+    plot.plantedAt = Date.now();
+    plot.wateredAt = Date.now();
+    plot.stage = 1;
+    plot.waterCount = 1;
+    selectedSeed = null;
+    document.getElementById('seedLabel').textContent = '👆 请先选择种子';
+    saveGarden(); addLog('🌰', `在${idx+1}号地种下${SEED_LIBRARY[plot.seed].name}`);
+    renderAll();
+    toast(`种下${SEED_LIBRARY[plot.seed].name}！🌰`);
+  } else if (plot.stage >= SEED_LIBRARY[plot.seed].growTime) {
+    // 收获
+    const name = SEED_LIBRARY[plot.seed].name;
+    addLog('🧺', `收获${idx+1}号地的${name}！`);
+    plot.seed = null; plot.plantedAt = null; plot.wateredAt = null; plot.stage = 0; plot.waterCount = 0;
+    saveGarden(); renderAll();
+    toast(`收获成功！🧺 ${name}`);
+  } else {
+    // 浇水
+    const hoursSinceWater = (Date.now() - plot.wateredAt) / 3600000;
+    if (hoursSinceWater < 1) { toast('刚浇过水，过会儿再来~'); return; }
+    plot.wateredAt = Date.now();
+    plot.waterCount++;
+    if (plot.waterCount >= plot.stage + 1 && plot.stage < SEED_LIBRARY[plot.seed].growTime) {
+      plot.stage++;
+    }
+    saveGarden(); addLog('💧', `给${idx+1}号地的${SEED_LIBRARY[plot.seed].name}浇水`);
+    renderAll();
+    toast('💧 浇水成功！');
+  }
+}
+
+function getPlotDisplay(plot) {
+  if (!plot.seed) return { emoji:'🟫', cls:'', label:'空地' };
+  const seed = SEED_LIBRARY[plot.seed];
+  if (plot.stage >= seed.growTime) return { emoji:seed.harvestEmoji, cls:'ready-harvest', label:'可收获！' };
+  const stageEmoji = STAGE_EMOJIS[Math.min(plot.stage, 3)] || '🌿';
+  const hoursSinceWater = (Date.now() - plot.wateredAt) / 3600000;
+  const needsWater = hoursSinceWater > 8;
+  return {
+    emoji: stageEmoji,
+    cls: needsWater ? 'needs-water planted' : 'planted',
+    label: `${seed.name}·第${plot.stage}天`,
+  };
 }
 
 // ==================== 渲染 ====================
-function renderAll() {
-  renderPet();
-  renderGarden();
-  renderLog();
-}
+function renderAll() { renderPet(); renderGarden(); renderLog(); renderSeedList(); }
 
 function renderPet() {
-  document.getElementById('petEmoji').textContent = getPetEmoji();
-  document.getElementById('petName').textContent = petState.name;
-  document.getElementById('petMood').textContent = getPetMood();
-  document.getElementById('hungerBar').style.width = petState.hunger + '%';
-  document.getElementById('happinessBar').style.width = petState.happiness + '%';
-  document.getElementById('hungerVal').textContent = petState.hunger;
-  document.getElementById('happinessVal').textContent = petState.happiness;
+  const total = pet.hunger + pet.happy + pet.energy + pet.clean;
+  let emoji, mood;
+  if (total >= 340) { emoji = '😸'; mood = '状态极佳！容光焕发~'; }
+  else if (total >= 260) { emoji = '🐱'; mood = '还不错，挺舒服的~'; }
+  else if (total >= 160) { emoji = '😐'; mood = '有点不舒服…需要照顾一下'; }
+  else if (pet.hunger < 25) { emoji = '😿'; mood = '好饿…快给我吃的！'; }
+  else if (pet.clean < 25) { emoji = '😾'; mood = '脏兮兮的…想洗澡！'; }
+  else if (pet.energy < 20) { emoji = '😴'; mood = '困得睁不开眼了…'; }
+  else if (pet.happy < 25) { emoji = '😞'; mood = '好无聊…陪我玩会儿吧'; }
+  else { emoji = '🐱'; mood = '还可以~'; }
 
-  // 颜色变化
-  const hungerBar = document.getElementById('hungerBar');
-  const happinessBar = document.getElementById('happinessBar');
-  if (petState.hunger < 20) hungerBar.style.background = 'linear-gradient(90deg, #E8505B, #FF6B6B)';
-  else if (petState.hunger < 50) hungerBar.style.background = 'linear-gradient(90deg, #FFA94D, #FFD166)';
-  else hungerBar.style.background = 'linear-gradient(90deg, #FF8BA7, #FFA94D)';
-  if (petState.happiness < 20) happinessBar.style.background = 'linear-gradient(90deg, #999, #BBB)';
-  else if (petState.happiness < 50) happinessBar.style.background = 'linear-gradient(90deg, #FFD166, #FFE066)';
-  else happinessBar.style.background = 'linear-gradient(90deg, #FFC6C7, #FFD166)';
+  document.getElementById('petEmoji').textContent = emoji;
+  document.getElementById('petNameInput').value = pet.name;
+  document.getElementById('petMood').textContent = mood;
+  document.getElementById('petLevel').textContent = `Lv.${pet.level||1} · 累计照料 ${pet.careDays||0} 天`;
+  document.getElementById('hungerVal').textContent = pet.hunger;
+  document.getElementById('happyVal').textContent = pet.happy;
+  document.getElementById('energyVal').textContent = pet.energy;
+  document.getElementById('cleanVal').textContent = pet.clean;
+  document.getElementById('hungerBar').style.width = pet.hunger+'%';
+  document.getElementById('happyBar').style.width = pet.happy+'%';
+  document.getElementById('energyBar').style.width = pet.energy+'%';
+  document.getElementById('cleanBar').style.width = pet.clean+'%';
+
+  // 低数值警告色
+  ['hunger','happy','energy','clean'].forEach((key,i)=>{
+    const val = pet[key==='happy'?'happy':key];
+    const fills = ['fill-hunger','fill-happy','fill-energy','fill-clean'];
+    const bar = document.getElementById(['hungerBar','happyBar','energyBar','cleanBar'][i]);
+    bar.style.background = val < 25 ? '#D08070' : '';
+  });
 }
 
 function renderGarden() {
-  const grid = document.getElementById('gardenGrid');
-  grid.innerHTML = gardenPlots.map((plot, i) => {
-    const emoji = getPlantEmoji(plot);
-    const status = getPlotStatus(plot);
-    const needsWater = plot.plant && plot.stage < 4 && (Date.now() - plot.wateredAt) / (1000 * 60 * 60) > 24;
-    return `
-      <div class="garden-plot ${plot.plant ? 'occupied' : ''}"
-           onclick="clickPlot(${i})"
-           style="${needsWater ? 'border-color: #FFA94D !important;' : ''}">
-        <span class="plant-emoji">${emoji || '🟫'}</span>
-        <span class="plot-label">${status}</span>
-        ${needsWater ? '<span class="water-indicator">💧</span>' : ''}
-      </div>
-    `;
+  document.getElementById('gardenGrid').innerHTML = garden.map((p,i) => {
+    const d = getPlotDisplay(p);
+    return `<div class="garden-plot ${d.cls}" onclick="clickPlot(${i})">
+      <span class="plant-emoji">${d.emoji}</span>
+      <span class="plot-label">${d.label}</span>
+    </div>`;
   }).join('');
 }
 
 function renderLog() {
   const list = document.getElementById('logList');
-  if (activityLog.length === 0) {
-    list.innerHTML = '<li class="log-empty">还没有互动记录~<br>快去喂宠物或种菜吧！</li>';
-    return;
-  }
-  list.innerHTML = activityLog.map(l => `
+  if (!logs.length) { list.innerHTML = '<li class="log-empty">还没有记录~<br>快去照顾宠物或种菜吧 🌱</li>'; return; }
+  list.innerHTML = logs.map(l => `
     <li class="log-item">
       <span class="log-icon">${l.icon}</span>
-      <span class="log-content">${l.text}</span>
-      <span class="log-time">${formatTime(l.time)}</span>
-    </li>
-  `).join('');
+      <span class="log-text">${l.text}</span>
+      <span class="log-time">${fmtTime(l.ts)}</span>
+    </li>`).join('');
 }
 
-function formatTime(ts) {
-  const d = new Date(ts);
-  const now = new Date();
-  const diff = now - d;
-  if (diff < 60000) return '刚刚';
-  if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
-  if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
-  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+function renderSeedList() {
+  document.getElementById('seedList').innerHTML = Object.entries(SEED_LIBRARY).map(([k,v])=>
+    `<button class="seed-option${selectedSeed===k?' selected':''}" onclick="selectSeed('${k}')" title="${v.desc}">
+      ${v.harvestEmoji} ${v.name}<br><small>${v.desc}</small>
+    </button>`
+  ).join('');
 }
 
-// ==================== 标签切换 ====================
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.includes(tab === 'pet' ? '宠物' : tab === 'garden' ? '菜园' : '记录')) {
-      n.classList.add('active');
-    }
-  });
+function switchTab(t) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel'+t.charAt(0).toUpperCase()+t.slice(1).replace('arden','arden').replace('og','og')).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>{ if(b.textContent.includes(t==='pet'?'宠物':t==='garden'?'菜园':'记录')) b.classList.add('active'); });
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(b=>{ if(b.textContent.includes(t==='pet'?'宠物':t==='garden'?'菜园':'记录')) b.classList.add('active'); });
+  if (t === 'garden') renderSeedList();
 }
 
-// ==================== 设置弹窗 ====================
-function openSettings() {
-  const anniversary = prompt('📅 设置纪念日（格式：2024-01-01）\n当前：' + ANNIVERSARY, ANNIVERSARY);
-  if (anniversary) {
-    localStorage.setItem('loveAnniversary', anniversary);
-    showToast('纪念日已更新！💝');
-    renderCountdown();
-  }
-}
-
-// ==================== 倒计时 ====================
-function renderCountdown() {
-  const anni = localStorage.getItem('loveAnniversary') || ANNIVERSARY;
-  const start = new Date(anni);
-  const now = new Date();
-  const days = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-  if (days >= 0) {
-    document.getElementById('countdownDays').textContent = days;
-  } else {
-    document.getElementById('countdownDays').textContent = '--';
-  }
-}
-
-function startCountdownTimer() {
-  renderCountdown();
-  setInterval(renderCountdown, 60000);
-}
-
-// ==================== 定时器 ====================
-function startDecayTimer() {
+// ==================== 计时器 ====================
+function startTimers() {
+  setInterval(() => { applyDecay(); renderPet(); saveLocal(); }, 60000);
   setInterval(() => {
-    applyDecay();
-    renderPet();
-    saveToLocal();
-  }, 60000); // 每分钟更新一次衰减
-}
-
-function startCooldownTimer() {
-  setInterval(() => {
-    if (cooldowns.feed > 0) {
-      cooldowns.feed--;
-      document.getElementById('cooldownText').textContent =
-        (cooldowns.feed > 0 || cooldowns.play > 0) ?
-        `冷却中：喂食 ${cooldowns.feed}s | 玩耍 ${cooldowns.play}s` : '';
-      if (cooldowns.feed === 0 && cooldowns.play === 0) {
-        document.getElementById('cooldownText').textContent = '';
-      }
-    }
-    if (cooldowns.play > 0) {
-      cooldowns.play--;
-      document.getElementById('cooldownText').textContent =
-        (cooldowns.feed > 0 || cooldowns.play > 0) ?
-        `冷却中：喂食 ${cooldowns.feed}s | 玩耍 ${cooldowns.play}s` : '';
+    let changed = false;
+    for (const k of ['feed','play','rest','wash']) { if (cooldowns[k] > 0) { cooldowns[k]--; changed = true; } }
+    if (changed) {
+      const parts = [];
+      if (cooldowns.feed>0) parts.push(`喂食 ${cooldowns.feed}s`);
+      if (cooldowns.play>0) parts.push(`玩耍 ${cooldowns.play}s`);
+      if (cooldowns.rest>0) parts.push(`睡觉 ${cooldowns.rest}s`);
+      if (cooldowns.wash>0) parts.push(`洗澡 ${cooldowns.wash}s`);
+      document.getElementById('cooldownText').textContent = parts.length ? '⏳ ' + parts.join(' · ') : '';
     }
   }, 1000);
 }
 
-// ==================== Toast ====================
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => toast.classList.remove('show'), 2000);
+// ==================== 工具 ====================
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._tid); t._tid = setTimeout(() => t.classList.remove('show'), 2000);
+}
+function ts(v) { return v ? new Date(v).getTime() : 0; }
+function iso(v) { return v ? new Date(v).toISOString() : null; }
+function fmtTime(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return '刚刚';
+  if (diff < 3600000) return Math.floor(diff/60000)+'分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000)+'小时前';
+  const d = new Date(ts);
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 
-// ==================== 浮动爱心 ====================
-function createHearts() {
-  const container = document.getElementById('hearts');
-  const heartEmojis = ['💕', '💖', '💗', '💝', '✨', '🌸', '🩷'];
-  for (let i = 0; i < 12; i++) {
-    const heart = document.createElement('span');
-    heart.className = 'heart';
-    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-    heart.style.left = Math.random() * 100 + '%';
-    heart.style.animationDelay = Math.random() * 10 + 's';
-    heart.style.animationDuration = (6 + Math.random() * 8) + 's';
-    heart.style.fontSize = (16 + Math.random() * 24) + 'px';
-    container.appendChild(heart);
-  }
-}
-
-// ==================== 启动 ====================
 init();
 </script>
-
 </body>
 </html>
