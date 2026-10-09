@@ -1,5 +1,6 @@
 import{createClient}from'./vendor/supabase.js';
 import{syncConfig}from'./sync-config.js';
+import{cloudFetch}from'./cloud-fetch.js';
 import{get,put,entries,useAccount,onLearningChange,mergeCloudEvents,seedLearning,guestLearning}from'./core.js';
 export class CloudSync{
  constructor(notify=()=>{}){this.notify=notify;this.user=null;this.status='本机自动保存';this.client=null;this.running=null;this.channel=null;this.timer=null;this.poll=null;this.generation=0;}
@@ -7,10 +8,10 @@ export class CloudSync{
  emit(status,changed=false){this.status=status;this.notify({status,user:this.user,changed});}
  async init(){
   if(!this.configured())return;
-  this.client=createClient(syncConfig.url,syncConfig.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  this.client=createClient(syncConfig.url,syncConfig.publishableKey,{global:{fetch:cloudFetch(syncConfig)},auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   onLearningChange(()=>this.schedule());
   this.client.auth.onAuthStateChange((event,session)=>{if(['INITIAL_SESSION','SIGNED_IN','SIGNED_OUT'].includes(event))setTimeout(()=>this.activate(session?.user||null).catch(e=>this.emit('同步失败：'+e.message)),0);});
-  this.poll=setInterval(()=>this.schedule(),30000);window.addEventListener('online',()=>this.schedule());window.addEventListener('offline',()=>this.emit(this.user?'等待联网后同步':'离线可用'));document.addEventListener('visibilitychange',()=>{if(!document.hidden)this.schedule();});
+  this.poll=setInterval(()=>{if(!document.hidden)this.schedule();},syncConfig.relay?5000:30000);window.addEventListener('online',()=>this.schedule());window.addEventListener('offline',()=>this.emit(this.user?'等待联网后同步':'离线可用'));document.addEventListener('visibilitychange',()=>{if(!document.hidden)this.schedule();});
  }
  async activate(user){
   if((user?.id||null)===(this.user?.id||null))return;
@@ -18,7 +19,7 @@ export class CloudSync{
   if(this.channel){await this.client.removeChannel(this.channel);this.channel=null;}
   this.user=user;await useAccount(user?.id||null);this.emit(user?'正在同步':'本机自动保存',true);
   if(!user)return;
-  this.channel=this.client.channel('study-'+user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'haixing_events',filter:'user_id=eq.'+user.id},()=>this.schedule()).subscribe(status=>{if(status==='SUBSCRIBED')this.schedule();});
+  if(!syncConfig.relay)this.channel=this.client.channel('study-'+user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'haixing_events',filter:'user_id=eq.'+user.id},()=>this.schedule()).subscribe(status=>{if(status==='SUBSCRIBED')this.schedule();});
   await this.sync();
  }
  schedule(){if(!this.user)return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.sync(),600);}
