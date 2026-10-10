@@ -3,7 +3,16 @@ export const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 export const localDay=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 export const answerSet=v=>[...new Set(String(v??'').toUpperCase().replace(/[\s,，、;；|]/g,'').split(''))].sort().join('');
 export const correct=(q,v)=>!!q.answer&&answerSet(q.answer)===answerSet(v);
-export function flatten(bank){let out=[];for(const c of bank.chapters){const visit=(q,parent=null)=>{if(q.unavailable)return;if(q.children?.length){q.children.forEach(child=>visit({...child,chapter:q.chapter||c.name,chapterId:c.id},q));return;}if(!q.answer||(!q.title&&!q.titleText&&!q.image&&!Object.keys(q.options||{}).length))return;out.push({...q,chapterId:c.id,chapter:c.name,parent,uid:`${bank.key}:${q.id}`,occurrence:out.length});};c.questions.forEach(q=>visit(q));}return out;}
+export function flatten(bank){
+ const out=[];for(const c of bank.chapters){const visit=(q,parent=null)=>{
+  if(q.unavailable)return;if(q.children?.length){q.children.forEach(child=>visit({...child,chapter:q.chapter||c.name,chapterId:c.id},q));return;}
+  if(!q.answer||(!q.title&&!q.titleText&&!q.image&&!Object.keys(q.options||{}).length))return;
+  out.push({...q,chapterId:c.id,chapter:c.name,parent,uid:bank.key+':'+q.id,occurrence:out.length});
+ };c.questions.forEach(q=>visit(q));}
+ const owners=new Map();for(const q of out){if(!owners.has(q.uid))owners.set(q.uid,new Set());owners.get(q.uid).add(q.parent?'parent:'+q.parent.id:'root');}
+ for(const q of out)if(q.parent&&owners.get(q.uid).size>1){q.legacyUid=q.uid;q.uid=bank.key+':associated:'+q.parent.id+':'+q.id;}
+ return out;
+}
 export function shuffled(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 export function recordAnswer(previous,q,value,now=Date.now()){const ok=correct(q,value);const streak=ok?(previous?.streak||0)+1:0;return{...previous,id:q.id,uid:q.uid,attempts:(previous?.attempts||0)+1,correctCount:(previous?.correctCount||0)+(ok?1:0),wrongCount:(previous?.wrongCount||0)+(ok?0:1),lastAnswer:value,lastCorrect:ok,wrong:ok?(streak>=3?false:!!previous?.wrong):true,streak,lastAt:now,due:now+(ok?[1,3,7,14,30][Math.min(streak-1,4)]:0)*86400000};}
 export function score(questions,answers){let right=0,answered=0;questions.forEach((q,i)=>{if(answers[i]){answered++;if(correct(q,answers[i]))right++;}});return{right,answered,total:questions.length,score:questions.length?Math.round(right/questions.length*100):0};}
@@ -14,17 +23,46 @@ export async function useAccount(id){if(id===accountId)return;if(dbPromise)(awai
 export function db(){return dbPromise??=new Promise((resolve,reject)=>{const r=indexedDB.open(accountId?'haixing-study-user-'+accountId:'haixing-study',2);r.onupgradeneeded=()=>{for(const s of [...learningStores,'cache','sync-events','sync-meta'])if(!r.result.objectStoreNames.contains(s))r.result.createObjectStore(s);};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
 export async function get(store,key){const d=await db();return new Promise((resolve,reject)=>{const r=d.transaction(store).objectStore(store).get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
 export async function put(store,key,value){return writeLearning(store,key,value,false);}
-async function writeLearning(store,key,value,deleted){const d=await db(),sync=!!accountId&&learningStores.includes(store);return new Promise((resolve,reject)=>{const t=d.transaction(sync?[store,'sync-events','sync-meta']:store,'readwrite'),s=t.objectStore(store);if(sync){const r=s.get(key);r.onsuccess=()=>{const old=r.result;if(JSON.stringify(old)===JSON.stringify(value)&&!deleted)return;const m=t.objectStore('sync-meta'),request=m.get('device');request.onsuccess=()=>{const device=request.result||crypto.randomUUID();m.put(device,'device');const c=m.get('clock');c.onsuccess=()=>{const clock=Math.max(Date.now(),(c.result||0)+1);m.put(clock,'clock');const payload=operation(store,key,old,value,deleted);const id=crypto.randomUUID();t.objectStore('sync-events').put({id,device,clock,payload,pending:true},id);};};};}deleted?s.delete(key):s.put(value,key);t.oncomplete=()=>{if(sync)changeListener('local');resolve(value);};t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error);});}
+async function writeLearning(store,key,value,deleted){
+ const d=await db(),sync=!!accountId&&learningStores.includes(store);
+ return new Promise((resolve,reject)=>{
+  const t=d.transaction(sync?[store,'sync-events','sync-meta']:store,'readwrite'),s=t.objectStore(store);let changed=false;
+  const previous=s.get(key);previous.onsuccess=()=>{
+   const old=previous.result;if(deleted?old===undefined:JSON.stringify(old)===JSON.stringify(value))return;
+   changed=true;deleted?s.delete(key):s.put(value,key);
+   if(!sync)return;
+   const m=t.objectStore('sync-meta'),request=m.get('device');request.onsuccess=()=>{
+    const device=request.result||crypto.randomUUID();m.put(device,'device');const c=m.get('clock');c.onsuccess=()=>{
+     const clock=Math.max(Date.now(),(c.result||0)+1);m.put(clock,'clock');const payload=operation(store,key,old,value,deleted),id=crypto.randomUUID();t.objectStore('sync-events').put({id,device,clock,payload,pending:true},id);
+    };
+   };
+  };
+  t.oncomplete=()=>{if(sync&&changed)changeListener('local');resolve(value);};t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error);
+ });
+}
 export async function entries(store){const d=await db();return new Promise((resolve,reject)=>{const r=d.transaction(store).objectStore(store).openCursor(),rows=[];r.onsuccess=()=>{const c=r.result;if(c){rows.push([c.key,c.value]);c.continue();}else resolve(rows);};r.onerror=()=>reject(r.error);});}
 export async function remove(store,key){return writeLearning(store,key,undefined,true);}
 export async function restoreBackup(data){if(data.app!=='haixing-study'||data.version!==1||!data.stores)throw Error('这不是有效的海行备份文件');for(const [s,rows] of Object.entries(data.stores)){if(!learningStores.includes(s)||!Array.isArray(rows)||rows.some(r=>!Array.isArray(r)||r.length!==2||typeof r[0]!=='string'))throw Error('备份结构不完整');}if(accountId){await seedLearning(data.stores);return;}const d=await db();await new Promise((resolve,reject)=>{const t=d.transaction(learningStores,'readwrite');for(const [s,rows]of Object.entries(data.stores))for(const [k,v]of rows)t.objectStore(s).put(v,k);t.oncomplete=resolve;t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error);});}
+export async function markCloudUploaded(ids){
+ const d=await db();await new Promise((resolve,reject)=>{const t=d.transaction('sync-events','readwrite'),store=t.objectStore('sync-events');for(const id of ids){const r=store.get(id);r.onsuccess=()=>{if(r.result)store.put({...r.result,pending:false},id);};}t.oncomplete=resolve;t.onerror=()=>reject(t.error);});
+}
 export async function mergeCloudEvents(incoming=[],acknowledged=[]){
  const d=await db();if(!accountId)throw Error('请先登录');
- await new Promise((resolve,reject)=>{const t=d.transaction([...learningStores,'sync-events','sync-meta'],'readwrite'),s=t.objectStore('sync-events'),r=s.getAll();
-  r.onsuccess=()=>{try{const all=new Map(r.result.map(e=>[e.id,e]));for(const e of incoming)if(!all.has(e.id))all.set(e.id,{...e,pending:false});for(const id of acknowledged)if(all.has(id))all.get(id).pending=false;
-   const rows=materialize([...all.values()]);for(const name of learningStores)t.objectStore(name).clear();for(const[k,v]of rows){const split=k.indexOf('\u0000');t.objectStore(k.slice(0,split)).put(v,k.slice(split+1));}
-   for(const e of all.values())s.put(e,e.id);const max=Math.max(0,...[...all.values()].map(e=>e.clock));t.objectStore('sync-meta').put(max,'clock');
-  }catch(error){t.abort();reject(error);}};t.oncomplete=resolve;t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error||Error('同步事务未完成'));});
+ return new Promise((resolve,reject)=>{
+  const t=d.transaction([...learningStores,'sync-events','sync-meta'],'readwrite'),s=t.objectStore('sync-events');let result={changed:false,stores:[]},remaining=learningStores.length+1,allRows={},events=[];
+  const done=()=>{if(--remaining)return;try{
+   const all=new Map(events.map(e=>[e.id,e]));for(const e of incoming)if(!all.has(e.id))all.set(e.id,{...e,pending:false});for(const id of acknowledged)if(all.has(id))all.get(id).pending=false;
+   const rows=materialize([...all.values()]);
+   for(const name of learningStores){const old=allRows[name];let changed=false;
+    for(const[k,v]of rows){const split=k.indexOf('\u0000');if(k.slice(0,split)!==name)continue;const key=k.slice(split+1);if(JSON.stringify(old.get(key))!==JSON.stringify(v)){t.objectStore(name).put(v,key);changed=true;}old.delete(key);}
+    for(const key of old.keys()){t.objectStore(name).delete(key);changed=true;}if(changed)result.stores.push(name);
+   }
+   for(const e of all.values())s.put(e,e.id);const max=[...all.values()].reduce((n,e)=>Math.max(n,e.clock),0);t.objectStore('sync-meta').put(max,'clock');result.changed=result.stores.length>0;
+  }catch(error){t.abort();reject(error);}};
+  const r=s.getAll();r.onsuccess=()=>{events=r.result;done();};
+  for(const name of learningStores){const rows=new Map();allRows[name]=rows;const cursor=t.objectStore(name).openCursor();cursor.onsuccess=()=>{const c=cursor.result;if(c){rows.set(c.key,c.value);c.continue();}else done();};}
+  t.oncomplete=()=>resolve(result);t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error||Error('同步事务未完成'));
+ });
 }
 export async function seedLearning(stores){
  const device=await get('sync-meta','device')||crypto.randomUUID(),events=[];

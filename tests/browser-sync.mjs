@@ -21,17 +21,18 @@ async function makePage(){
  await page.getByRole('button',{name:'登录 / 注册',exact:true}).click();await page.locator('#cloud-email').fill(user.email);await page.locator('#cloud-password').fill('test-password');await page.getByRole('button',{name:'登录',exact:true}).click();await page.getByRole('button',{name:'立即同步',exact:true}).waitFor();await page.waitForFunction(()=>document.querySelector('.status-dot')?.textContent==='已同步');
  return page;
 }
+async function manualSync(p){await p.getByRole('button',{name:'立即同步',exact:true}).click();await p.waitForFunction(()=>!document.querySelector('[data-action=cloud-sync]')?.disabled);}
 try{
  const a=await makePage(),b=await makePage();
  await a.evaluate(async()=>{const c=await import('/core.js');await c.put('records','test:1',{uid:'test:1',attempts:1,correctCount:1,wrongCount:0,lastCorrect:true,lastAt:100});});
  await b.evaluate(async()=>{const c=await import('/core.js');await c.put('records','test:1',{uid:'test:1',attempts:1,correctCount:0,wrongCount:1,lastCorrect:false,lastAt:200});});
- for(const p of [a,b,a]){await p.getByRole('button',{name:'立即同步',exact:true}).click();await p.waitForFunction(()=>document.querySelector('.status-dot')?.textContent==='已同步');}
+ for(const p of [a,b,a])await manualSync(p);
  for(const p of [a,b]){const r=await p.evaluate(async()=>{const c=await import('/core.js');return c.get('records','test:1');});assert.equal(r.attempts,2);assert.equal(r.correctCount,1);assert.equal(r.wrongCount,1);}
- await a.getByRole('button',{name:'立即同步',exact:true}).click();await a.waitForFunction(()=>document.querySelector('.status-dot')?.textContent==='已同步');assert.equal(events.length,2);
+ await manualSync(a);assert.equal(events.length,2);
  await b.context().setOffline(true);await b.evaluate(async()=>{const c=await import('/core.js');const old=await c.get('records','test:1');await c.put('records','test:1',{...old,attempts:3,correctCount:2,lastCorrect:true,lastAt:300});});
  await b.waitForTimeout(900);assert.equal(events.length,2);assert.equal(await b.evaluate(async()=>{const c=await import('/core.js');return(await c.entries('sync-events')).filter(x=>x[1].pending).length;}),1);
- await b.context().setOffline(false);await b.waitForFunction(()=>document.querySelector('.status-dot')?.textContent==='已同步');
- await a.getByRole('button',{name:'立即同步',exact:true}).click();await a.waitForFunction(()=>document.querySelector('.status-dot')?.textContent==='已同步');assert.equal((await a.evaluate(async()=>{const c=await import('/core.js');return c.get('records','test:1');})).attempts,3);
+ await b.context().setOffline(false);for(let i=0;i<100;i++){if(!await b.evaluate(async()=>{const c=await import('/core.js');return(await c.entries('sync-events')).some(x=>x[1].pending);}))break;await b.waitForTimeout(100);}
+ await manualSync(a);assert.equal((await a.evaluate(async()=>{const c=await import('/core.js');return c.get('records','test:1');})).attempts,3);
  await a.getByRole('button',{name:'退出账号',exact:true}).click();await a.getByRole('button',{name:'登录 / 注册',exact:true}).waitFor();const guest=await a.evaluate(async()=>{const c=await import('/core.js');return c.get('records','test:1');});assert.equal(guest,undefined);
  await fs.mkdir('test-results',{recursive:true});await b.screenshot({path:'test-results/cloud-profile.png',fullPage:true});assert.deepEqual(errors,[]);
  console.log(JSON.stringify({mockBackend:true,twoDevicesMerged:true,retriesIdempotent:true,offlineQueueRecovered:true,accountIsolation:true,events:events.length,errors}));

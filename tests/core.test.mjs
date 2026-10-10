@@ -4,3 +4,8 @@ test('wrong questions require three consecutive correct attempts to graduate',()
 test('exam scoring counts unanswered and keeps repeated question positions',()=>{const q={answer:'A'};assert.deepEqual(score([q,q,{answer:'BC'}],{0:'A',2:'CB'}),{right:2,answered:2,total:3,score:67});});
 test('associated children retain context and invalid source records are excluded',()=>{const parent={id:1,title:'passage',children:[{id:2,title:'q',answer:'A',options:{A:'yes'}}]};const b={key:'b',chapters:[{id:7,name:'chapter',questions:[parent,{id:3,unavailable:true,answer:'A'},{id:4,title:'',options:{},answer:'A'},parent]}]};const q=flatten(b);assert.equal(q.length,2);assert.equal(q[0].parent,parent);assert.equal(q[0].uid,'b:2');assert.equal(q[1].occurrence,1);assert.equal(q[0].chapterId,7);});
 test('source and note content is escaped before HTML rendering',()=>{assert.equal(esc('<img src=x onerror="alert(1)">'), '&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');assert.equal(localDay(new Date(2026,8,3,23,45)),'2026-09-03');});
+test('reused child numbers are scoped to their source passage while ordinary identities stay stable',()=>{
+ const child=title=>({id:1,title,answer:'A',options:{A:'yes'}});
+ const b={key:'bank',chapters:[{id:1,name:'关联题',questions:[{id:10,title:'材料一',children:[child('子题一')]},{id:20,title:'材料二',children:[child('子题二')]},{id:3,title:'普通题',answer:'B'}]}]};
+ const q=flatten(b);assert.equal(q[0].uid,'bank:associated:10:1');assert.equal(q[1].uid,'bank:associated:20:1');assert.equal(q[0].legacyUid,'bank:1');assert.equal(q[2].uid,'bank:3');assert.equal(new Set(q.map(x=>x.uid)).size,3);
+});

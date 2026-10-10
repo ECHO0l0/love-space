@@ -2,7 +2,7 @@ import test from'node:test';
 import assert from'node:assert/strict';
 import{operation,materialize}from'../sync-model.js';
 import{indexedDB}from'fake-indexeddb';
-import{useAccount,put,get,entries,mergeCloudEvents,seedLearning,remove,guestLearning,restoreBackup}from'../core.js';
+import{useAccount,put,get,entries,mergeCloudEvents,markCloudUploaded,onLearningChange,seedLearning,remove,guestLearning,restoreBackup}from'../core.js';
 globalThis.indexedDB=indexedDB;
 let id=0;
 const event=(payload,clock=++id,device='a')=>({id:'e'+(++id),clock,device,payload});
@@ -47,4 +47,9 @@ test('IndexedDB atomically persists pending changes, isolates accounts, and keep
  await remove('records','q');await mergeCloudEvents();assert.equal(await get('records','q'),undefined);
  await restoreBackup({app:'haixing-study',version:1,stores:{records:[['imported',{attempts:4}]]}});assert.equal((await get('records','imported')).attempts,4);
  await useAccount(null);assert.equal((await get('records','guest')).attempts,3);
+});
+test('unchanged writes do not start another sync; acknowledgements never rewrite learning data',async()=>{
+ await useAccount('quiet-test');let notifications=0;onLearningChange(()=>notifications++);
+ const profile={nickname:'航海人',avatar:'⚓'};await put('settings','user-profile',profile);await put('settings','user-profile',{...profile});await remove('sessions','missing');assert.equal(notifications,1);
+ const events=(await entries('sync-events')).map(x=>x[1]);assert.equal(events.length,1);await markCloudUploaded(events.map(e=>e.id));assert.deepEqual(await get('settings','user-profile'),profile);const merged=await mergeCloudEvents(events.map(({pending,...e})=>e));assert.equal(merged.changed,false);assert.deepEqual(merged.stores,[]);onLearningChange(()=>{});await useAccount(null);
 });
